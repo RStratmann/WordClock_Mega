@@ -26,6 +26,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Adafruit_GFX_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Wire/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1072210164" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -38,6 +40,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Adafruit_GFX_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Wire/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.658440937" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -50,6 +54,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Adafruit_GFX_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Wire/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1515792242" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

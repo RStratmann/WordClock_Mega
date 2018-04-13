@@ -10,6 +10,7 @@
 
 // Include für Schnittstellen
 #include <SPI.h>
+#include <Wire.h>
 
 
 // Defines zur Pin-Zuordnung für 1.8" TFT shield
@@ -18,7 +19,7 @@
 #define TFT_DC     8
 
 // Defines für Neopixel-LED-Stripe
-#define NUM_LEDS 6        // Anzahl der verwendeten LEDs
+#define NUM_LEDS 144        // Anzahl der verwendeten LEDs
 #define DATA_PIN 6        // Data-Pin des LED-Stripes liegt auf Arduino-Pin 6
 
 
@@ -26,161 +27,452 @@
 // Initialisierung LED-Stripe
 CRGB leds[NUM_LEDS];      // Initialisierung  LED-Stripe
 
+int i;
+
+char strTime[10], strPrevTime[10];
+char strDate[12], strPrevDate[12];
+
 // Initialisierung TFT-Display
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
+
+
+CRGB led_col = CRGB::Red;
+
+
+void set_leds (CRGB *, int, int, CRGB);
+
+char my_buffer[25];
+
+volatile boolean receiveFlag = false;
 
 
 
 
 void setup() {
+  byte error, address;
+  int nDevices;
 
-      // Die WordClock_Mega benutzt LED-Stripes aus der NeoPixel-Serie
-      FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  // Die WordClock_Mega benutzt LED-Stripes aus der NeoPixel-Serie
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 
-        /* die serielle Ausgabe initialisieren */
-      Serial.begin(115200);
-      Serial.println("Hallo");
+  /* die serielle Ausgabe initialisieren */
+  Serial.begin(9600);
+  Serial.println("Initialisierung");
 
-      // Use this initializer if you're using a 1.8" TFT
-      tft.initR(INITR_BLACKTAB);   // initialize a ST7735S chip, black tab
+  // Use this initializer if you're using a 1.8" TFT
 
-      tft.setTextWrap(false);
-      tft.setRotation(3);
+  Wire.begin(8);                // join i2c bus with address #8
+  Wire.onReceive(receiveEvent); // register event
 
-      Serial.println("Initialized");
+
+  /* TFT-Display Grundeinstellungen setzen */
+  tft.initR(INITR_BLACKTAB);   // initialize a ST7735S chip, black tab
+  tft.setTextWrap(false);
+  tft.setRotation(1);
+  tft.fillScreen(ST7735_BLUE);
+  tft.setFont(&FreeSansOblique18pt7b);
+  tft.setTextColor(ST7735_YELLOW);
+
+  i = 0;
+
+  Serial.println("Initialisierung abgeschlossen");
+
+  strcpy (strTime, "");
+  strcpy (strPrevTime, "");
 }
 
 
 
 void loop() {
 
-  char clockString[30];
+  int nHour, nAM_or_PM, nMinute, nFiveMinutes;
+  int led_nr;
+
+  char strWeekday[2], strHour[3], strMinute[3];
+
+  int fb_code;
 
 
+  if (receiveFlag) {
 
-  // put your main code here, to run repeatedly:
-  tft.fillScreen(ST7735_BLUE);
+    receiveFlag = false;
 
-  tft.setFont(&FreeSansOblique18pt7b);
-  tft.setTextColor(ST7735_YELLOW);
+    /* Zeit, Datum, Wochentag und Fernbedienungscode aus Buffer extrahieren */
+    strncpy(strTime, my_buffer, 8);
+    strTime[8] = 0;
+    strncpy(strDate, my_buffer+9, 10);
+    strDate[10] = 0;
+    strncpy(strWeekday, my_buffer+20, 1);
+    strWeekday[1] = 0;
+    fb_code = atoi(my_buffer+22);
 
-  tft.setCursor(10, 40);
-//  tft.setTextSize(2);
+/*  Debugging-Ausgabe
+    Serial.print("-->");
+    Serial.print(strTime);
+    Serial.print("<--->");
+    Serial.print(strDate);
+    Serial.print("<--->");
+    Serial.print(strWeekday);
+    Serial.print("<--->");
+    Serial.print(fb_code);
+    Serial.println("<--");
+ */
 
-    for (int j=0; j<7; j++)
+    /* Wechsel der Uhrzeit */
+    if (strcmp(strTime, strPrevTime) != 0)
     {
-        for (int i=0; i<=NUM_LEDS; i++)
-        {
-            if (i > 0)
-            {
-              leds[i-1] = 0;
-            }
 
-            if (i < NUM_LEDS)
-            {
-                switch (j) {
-                  case 0 :
-                    leds[i] = CRGB::Yellow;
-                    sprintf(clockString, "Gelb");
-                  break;
-                  case 1 :
-                    leds[i] = CRGB::Aqua;
-                    sprintf(clockString, "Aqua");
-                  break;
-                  case 2 :
-                    leds[i] = CRGB::Red;
-                    sprintf(clockString, "Rot");
-                  break;
-                  case 3 :
-                    leds[i] = CRGB::Purple;
-                    sprintf(clockString, "Lila");
-                  break;
-                  case 4 :
-                    leds[i] = CRGB::Green;
-                    sprintf(clockString, "Grün");
-                  break;
-                  case 5 :
-                    leds[i] = CRGB::Blue;
-                    sprintf(clockString, "Blau");
-                  break;
-                  default :
-                    leds[i] = CRGB::White;
-                    sprintf(clockString, "Weiß");
+      /* Anzeige Uhrzeit */
+      strncpy(strHour, strTime, 2);
+      strHour[2] = 0;
+      strncpy(strMinute, strTime + 3, 2);
+      strMinute[2] = 0;
 
-               }
-            }
-
-            FastLED.show();
-
-            tft.setCursor(10, 40);
-             //  tft.setTextSize(2);
-
-            tft.println(clockString);
-
-            delay(500);
-        }
-
-        tft.setTextColor(ST7735_BLUE);
-        tft.setCursor(10, 40);
-        tft.println(clockString);
-        tft.setTextColor(ST7735_YELLOW);
-
-    }
+      nHour   = atoi(strHour);
+      nMinute = atoi(strMinute);
 
 
-    int k=0, l=0;
-
-    while (true)
-    {
-      leds[k] = 0;
-
-      k = (int) random(0, NUM_LEDS);
-      l = (int) random(0, 7);
-
-      switch (l)
+      for (led_nr=0; led_nr<NUM_LEDS; led_nr++)
       {
-          leds[k] = CRGB::Yellow;
-          sprintf(clockString, "Gelb");
-        break;
-        case 1 :
-          leds[k] = CRGB::Aqua;
-          sprintf(clockString, "Aqua");
-        break;
-        case 2 :
-          leds[k] = CRGB::Red;
-          sprintf(clockString, "Rot");
-        break;
-        case 3 :
-          leds[k] = CRGB::Purple;
-          sprintf(clockString, "Lila");
-        break;
-        case 4 :
-          leds[k] = CRGB::Green;
-          sprintf(clockString, "Grün");
-        break;
-        case 5 :
-          leds[k] = CRGB::Blue;
-          sprintf(clockString, "Blau");
-        break;
-        default :
-          leds[k] = CRGB::White;
-          sprintf(clockString, "Weiß");
-
+        leds[led_nr] = 0;
       }
+
+
+      set_leds (leds, 1, 2, CRGB::Red); // ES
+      Serial.print("Es ");
+
+
+      switch (nMinute % 5) {
+        case 1:
+        case 2:
+          set_leds (leds,  4,  6, CRGB::Red); // WAR
+          set_leds (leds, 25, 30, CRGB::Red); // GERADE
+          Serial.print("war gerade ");
+          break;
+        case 3:
+        case 4:
+          set_leds (leds,  7,  9, CRGB::Red); // IST
+          set_leds (leds, 13, 18, CRGB::Red); // GLEICH
+          Serial.print("ist gleich ");
+          break;
+        default:
+          set_leds (leds,  7,  9, CRGB::Red); // IST
+          set_leds (leds, 32, 36, CRGB::Red); // GENAU
+          Serial.print("ist genau ");
+          break;
+      }
+
+      nFiveMinutes = int((nMinute + 2)/5);
+
+      switch (nFiveMinutes) {
+        case 1:
+        case 5:
+        case 7:
+        case 11:
+          set_leds (leds, 45, 48, CRGB::Red); // FÜNF
+          Serial.print("fuenf ");
+          break;
+        case 2:
+        case 10:
+          set_leds (leds, 49, 52, CRGB::Red); // ZEHN
+          Serial.print("zehn ");
+          break;
+        case 3:
+        case 9:
+          set_leds (leds, 37, 43, CRGB::Red); // VIERTEL
+          Serial.print("viertel ");
+          break;
+        case 4:
+        case 8:
+          set_leds (leds, 54, 60, CRGB::Red); // ZWANZIG
+          Serial.print("zwanzig ");
+          break;
+      }
+
+
+      switch (nFiveMinutes) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 7:
+          set_leds (leds, 61, 64, CRGB::Red); // NACH
+          Serial.print("nach ");
+          break;
+        case 5:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+          set_leds (leds, 65, 67, CRGB::Red); // VOR
+          Serial.print("vor ");
+          break;
+      }
+
+      switch (nFiveMinutes) {
+        case 5:
+        case 6:
+        case 7:
+          set_leds (leds, 69, 72, CRGB::Red); // HALB
+          Serial.print("halb ");
+          break;
+      }
+
+      nAM_or_PM = 0;
+      if (nMinute > 22) nHour++;
+      if (nHour   > 12)
+      {
+        nHour = nHour - 12;
+        nAM_or_PM = 1;
+      }
+      switch (nHour) {
+        case 1:
+          set_leds (leds, 75, 78, CRGB::Red); // EINS
+          Serial.print("Ein ");
+          break;
+        case 2:
+          set_leds (leds, 101, 104, CRGB::Red); // ZWEI
+          Serial.print("Zwei ");
+          break;
+        case 3:
+          set_leds (leds, 73, 76, CRGB::Red); // DREI
+          Serial.print("Drei ");
+          break;
+        case 4:
+          set_leds (leds, 97, 100, CRGB::Red); // VIER
+          Serial.print("Vier ");
+          break;
+        case 5:
+          set_leds (leds, 87, 90, CRGB::Red); // FÜNF
+          Serial.print("Fünf ");
+          break;
+        case 6:
+          set_leds (leds, 115, 119, CRGB::Red); // SECHS
+          Serial.print("Sechs ");
+          break;
+        case 7:
+          set_leds (leds, 78, 83, CRGB::Red); // SIEBEN
+          Serial.print("Sieben ");
+          break;
+        case 8:
+          set_leds (leds, 105, 108, CRGB::Red); // ACHT
+          Serial.print("Acht ");
+          break;
+        case 9:
+          set_leds (leds, 110, 113, CRGB::Red); // NEUN
+          Serial.print("Neun ");
+          break;
+        case 10:
+          set_leds (leds, 121, 124, CRGB::Red); // ZEHN
+          Serial.print("Zehn ");
+          break;
+        case 11:
+          set_leds (leds, 85, 87, CRGB::Red); // ELF
+          Serial.print("Elf ");
+          break;
+        default:
+          set_leds (leds, 92, 96, CRGB::Red); // ZWÖLF
+          Serial.print("Zwoelf ");
+      }
+
+      set_leds (leds, 126, 128, CRGB::Red); // UHR
+      Serial.print("Uhr ");
+
+      if (nAM_or_PM == 0)
+      {
+        set_leds (leds, 130, 132, CRGB::Red); // VOR
+        Serial.print("vor Mittag");
+      }
+      else
+      {
+        set_leds (leds, 133, 136, CRGB::Red); // NACH
+        Serial.print("nach Mittag");
+      }
+
+      set_leds (leds, 139, 144, CRGB::Red); // MITTAG
+
+      Serial.println("<--");
       FastLED.show();
 
-      tft.setCursor(10, 40);
-
-      tft.println(clockString);
 
 
-      delay(2500);
 
-      tft.setTextColor(ST7735_BLUE);
-      tft.setCursor(10, 40);
-      tft.println(clockString);
+
+      /* allgemeine Einstellungen TFT-Display */
+      tft.setTextSize(1);
       tft.setTextColor(ST7735_YELLOW);
+      tft.setFont(&FreeSansOblique18pt7b);
+
+      /* Ausgabe der Uhrzeit auf dem TFT-Display*/
+      int timeString_pos[8] = {10, 29, 48, 58, 77, 96, 106, 125};
+
+      for (int j=0; j<8; j++)
+      {
+
+        if (strTime[j] != strPrevTime[j])
+        {
+          tft.setCursor(timeString_pos[j], 40);
+          tft.setTextColor(ST7735_BLUE);
+          tft.println(strPrevTime[j]);
+
+          tft.setCursor(timeString_pos[j], 40);
+          tft.setTextColor(ST7735_YELLOW);
+          tft.println(strTime[j]);
+        }
+      }
+
+      strcpy(strPrevTime, strTime);
     }
 
+
+    /* Wechsel des Datums */
+    if (strcmp(strDate, strPrevDate) != 0)
+    {
+
+      tft.setFont(&FreeSansOblique12pt7b);
+
+      tft.fillRect(21,63,121,23, ST7735_BLUE);
+
+      switch (atoi (strWeekday)) {
+        case 0:
+          tft.setCursor(41, 80);
+          tft.println("Montag");
+          break;
+        case 1:
+          tft.setCursor(34, 80);
+          tft.println("Dienstag");
+          break;
+        case 2:
+          tft.setCursor(35, 80);
+          tft.println("Mittwoch");
+          break;
+        case 3:
+          tft.setCursor(19, 80);
+          tft.println("Donnerstag");
+          break;
+        case 4:
+          tft.setCursor(44, 80);
+          tft.println("Freitag");
+          break;
+        case 5:
+          tft.setCursor(33, 80);
+          tft.println("Samstag");
+          break;
+        case 06:
+          tft.setCursor(36, 80);
+          tft.println("Sonntag");
+          break;
+      }
+
+
+      tft.setTextColor(ST7735_BLUE);
+      tft.setCursor(20, 113);
+      tft.println(strPrevDate);
+
+      tft.setTextColor(ST7735_YELLOW);
+      tft.setCursor(20, 113);
+      tft.println(strDate);
+
+      strcpy(strPrevDate, strDate);
+    }
+
+
+/*
+    Serial.println (strTime);
+
+    for (led_nr=0; led_nr<NUM_LEDS; led_nr++)
+    {
+      leds[led_nr] = 0;
+    }
+
+    set_leds (leds, 1, 2, CRGB::Red);   // Es
+
+    Serial.print ("Es ");
+
+    switch (minute % 5) {
+      case 0:
+        set_leds (leds, 4, 6, CRGB::Red);     // ist
+        set_leds (leds, 13, 17, CRGB::Red);   // genau
+        Serial.println ("ist genau ");
+        break;
+      case 1:
+      case 2:
+        set_leds (leds, 7, 9, CRGB::Red);     // war
+        set_leds (leds, 18, 23, CRGB::Red);   // gerade
+        Serial.println ("war gerade ");
+        break;
+      case 3:
+      case 4:
+        set_leds (leds, 4, 6, CRGB::Red);    // ist
+        set_leds (leds, 25, 30, CRGB::Red);  // gleich
+        Serial.println ("ist gleich");
+        break;
+    }
+
+
+//    set_leds (leds, 17, 21, CRGB::Green);
+
+    set_leds (leds, 35, 42, CRGB::Blue);
+
+//    set_leds (leds, 76, 78, CRGB::Red);
+
+*/
+
+
+
+/*
+  delay (1000);
+  */
+  }
+
+
 }
+
+
+
+void set_leds (CRGB *my_leds, int nr_start, int nr_end, CRGB n_col)
+{
+
+  for (int led_nr=nr_start-1; led_nr<nr_end; led_nr++)
+  {
+      *(my_leds + led_nr) = n_col;
+  }
+}
+
+
+// function that executes whenever data is received from master
+// this function is registered as an event, see setup()
+void receiveEvent(int howMany)
+{
+  int j=0;
+
+  while( Wire.available()){
+    my_buffer[j++] = Wire.read();
+  }
+  my_buffer[j] = 0;
+
+  receiveFlag = true;
+}
+
+
+
+/*
+  switch (x)
+  {
+    case 5:
+      led_col = CRGB::Red;
+      tft.fillScreen(ST7735_RED);
+      break;
+    case 6:
+      led_col = CRGB::Green;
+      tft.fillScreen(ST7735_GREEN);
+     break;
+    case 7:
+      led_col = CRGB::Blue;
+      tft.fillScreen(ST7735_BLUE);
+      break;
+
+  }
+*/
+
 
