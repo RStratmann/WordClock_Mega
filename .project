@@ -42,9 +42,19 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.6.21/variants/eightanaloginputs</locationURI>
 		</link>
 		<link>
+			<name>libraries/Adafruit_ST7735_Library</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Adafruit_ST7735_Library/1.0.8</locationURI>
+		</link>
+		<link>
 			<name>libraries/FastLED</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/FastLED/3.1.6</locationURI>
+		</link>
+		<link>
+			<name>libraries/SPI</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.6.21/libraries/SPI</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -22,6 +22,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/FastLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Adafruit_ST7735_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1072210164" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -30,6 +33,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/FastLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Adafruit_ST7735_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.658440937" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -38,6 +44,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/FastLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/Adafruit_ST7735_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WordClock_Mega/libraries/SPI/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1515792242" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
