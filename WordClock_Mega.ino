@@ -1,29 +1,110 @@
 /*
-  Blink
-  Turns on an LED on for one second, then off for one second, repeatedly.
 
-  Most Arduinos have an on-board LED you can control. On the Uno and
-  Leonardo, it is attached to digital pin 13. If you're unsure what
-  pin the on-board LED is connected to on your Arduino model, check
-  the documentation at http://www.arduino.cc
-
-  This example code is in the public domain.
-
-  modified 8 May 2014
-  by Scott Fitzgerald
  */
+#include "FastLED.h"
+
+// For led chips like Neopixels, which have a data line, ground, and power, you just
+// need to define DATA_PIN.  For led chipsets that are SPI based (four wires - data, clock,
+// ground, and power), like the LPD8806 define both DATA_PIN and CLOCK_PIN
+#define NUM_LEDS 6
+#define DATA_PIN 6
+
+// Define the array of leds
+CRGB leds[NUM_LEDS];
 
 
-// the setup function runs once when you press reset or power the board
+
 void setup() {
-  // initialize digital pin 13 as an output.
-  pinMode(13, OUTPUT);
+
+      // Die WordClock_Mega benutzt LED-Stripes aus der NeoPixel-Serie
+      FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 }
 
-// the loop function runs over and over again forever
 void loop() {
-  digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(10000);              // wait for a second
-  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);              // wait for a second
+
+//  leds[1] = CRGB::Red;
+//  leds[2] = CRGB::Red;
+//  leds[3] = CRGB::Red;
+
+    for (int j=0; j<7; j++)
+    {
+        for (int i=0; i<=NUM_LEDS; i++)
+        {
+            if (i > 0)
+            {
+              leds[i-1] = 0;
+            }
+
+            if (i < NUM_LEDS)
+            {
+                switch (j) {
+                  case 0 :
+                    leds[i] = CRGB::Yellow;
+                  break;
+                  case 1 :
+                    leds[i] = CRGB::Aqua;
+                  break;
+                  case 2 :
+                    leds[i] = CRGB::Red;
+                  break;
+                  case 3 :
+                    leds[i] = CRGB::Purple;
+                  break;
+                  case 4 :
+                    leds[i] = CRGB::Green;
+                  break;
+                  case 5 :
+                    leds[i] = CRGB::Blue;
+                  break;
+                  default :
+                    leds[i] = CRGB::White;
+
+                }
+            }
+
+            FastLED.show();
+
+            delay(100);
+        }
+    }
+
+
+    int k=0, l=0;
+
+    while (true)
+    {
+      leds[k] = 0;
+
+      k = (int) random(0, NUM_LEDS);
+      l = (int) random(0, 7);
+
+      switch (l)
+      {
+        case 0 :
+          leds[k] = CRGB::Yellow;
+        break;
+        case 1 :
+          leds[k] = CRGB::Aqua;
+        break;
+        case 2 :
+          leds[k] = CRGB::Red;
+        break;
+        case 3 :
+          leds[k] = CRGB::Purple;
+        break;
+        case 4 :
+          leds[k] = CRGB::Green;
+        break;
+        case 5 :
+          leds[k] = CRGB::Blue;
+        break;
+        default :
+          leds[k] = CRGB::White;
+
+      }
+      FastLED.show();
+
+      delay(500);
+    }
 }
+
